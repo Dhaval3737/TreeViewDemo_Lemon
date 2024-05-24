@@ -1,0 +1,168 @@
+USE [LemonDB]
+GO
+/****** Object:  Table [dbo].[tblNode]    Script Date: 5/24/2024 12:00:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tblNode](
+	[NodeId] [int] IDENTITY(1,1) NOT NULL,
+	[NodeName] [nvarchar](50) NULL,
+	[ParentNodeId] [int] NULL,
+	[IsActive] [bit] NULL,
+	[IsDeleted] [bit] NULL,
+	[StartDate] [datetime] NULL,
+ CONSTRAINT [PK_tblNode] PRIMARY KEY CLUSTERED 
+(
+	[NodeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[tblParentNode]    Script Date: 5/24/2024 12:00:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[tblParentNode](
+	[ParentNodeId] [int] IDENTITY(1,1) NOT NULL,
+	[ParentNodeName] [nvarchar](50) NULL,
+ CONSTRAINT [PK_tblParentNode] PRIMARY KEY CLUSTERED 
+(
+	[ParentNodeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[tblNode] ADD  CONSTRAINT [DF_tblNode_IsDeleted]  DEFAULT ((0)) FOR [IsDeleted]
+GO
+/****** Object:  StoredProcedure [dbo].[deleteNode]    Script Date: 5/24/2024 12:00:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[deleteNode] 
+	@NodeId INT,
+	@ResultCode INT OUT
+AS
+BEGIN
+	IF @NodeId IS NOT NULL AND @NodeId > 0
+	BEGIN
+		UPDATE tblNode SET
+		IsDeleted = 1 WHERE NodeId = @NodeId
+		SET @ResultCode = 103
+	END
+	ELSE
+	BEGIN
+		SET @ResultCode = -1
+	END
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getAllNodes]    Script Date: 5/24/2024 12:00:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+
+-- EXEC getAllNodes null
+-- EXEC getAllNodes 1
+-- =============================================
+CREATE PROCEDURE [dbo].[getAllNodes]
+	@NodeId INT
+AS
+BEGIN
+SET NOCOUNT ON
+ 
+  DECLARE @stSQL AS NVARCHAR(MAX)
+ 
+  SET @stSQL = ';WITH PAGED AS
+          		(SELECT N.NodeId, N.NodeName, N.StartDate, P.ParentNodeName, N.IsActive, P.ParentNodeId
+					FROM tblNode N WITH(NOLOCK)
+					JOIN tblParentNode P WITH(NOLOCK)
+						ON P.ParentNodeId = N.ParentNodeId
+            		WHERE N.IsDeleted = 0'
+ 
+  IF @NodeId IS NOT NULL AND @NodeId > 0
+  BEGIN
+    SET @stSQL = @stSQL + ' AND N.NodeId = ''' + CAST(@NodeId AS NVARCHAR(50)) + '''' 
+  END
+ 
+   SET @stSQL = @stSQL + ') SELECT * FROM PAGED ORDER BY 1 DESC'
+ 
+  PRINT(@stSQL)
+  EXECUTE(@stSQL)
+ 
+  SET NOCOUNT OFF
+END
+GO
+/****** Object:  StoredProcedure [dbo].[getParentNodeList]    Script Date: 5/24/2024 12:00:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[getParentNodeList]
+	@ParentNodeId INT
+AS
+BEGIN
+	IF @ParentNodeId IS NOT NULL AND @ParentNodeId > 0
+	BEGIN
+		SELECT ParentNodeId, ParentNodeName FROM tblParentNode WHERE ParentNodeId = @ParentNodeId
+	END
+	ELSE
+	BEGIN
+		SELECT ParentNodeId, ParentNodeName FROM tblParentNode 
+	END
+END
+GO
+/****** Object:  StoredProcedure [dbo].[saveUpdateNode]    Script Date: 5/24/2024 12:00:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[saveUpdateNode] 
+   @NodeId INT,
+   @NodeName NVARCHAR(50),
+   @ParentNodeId INT,
+   @IsActive BIT,
+   @StartDate DATETIME,
+   @ResultCode INT OUT
+
+AS
+BEGIN
+	IF @NodeId IS NOT NULL AND @NodeId > 0
+	BEGIN
+		UPDATE tblNode SET
+			NodeName =  @NodeName ,
+			ParentNodeId = @ParentNodeId,
+			IsActive = @IsActive,
+			StartDate = @StartDate
+		WHERE NodeId = @NodeId
+
+		SET @ResultCode = 101
+	END
+	ELSE
+	BEGIN
+		INSERT INTO tblNode VALUES (@NodeName, @ParentNodeId, @IsActive, 0, @StartDate)
+
+		SET @ResultCode = 102
+	END
+END
+GO

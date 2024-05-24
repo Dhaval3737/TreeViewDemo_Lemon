@@ -76,4 +76,22 @@
         const myTimeout = setTimeout($("#StartDate").val(Startdate), 2000);
 
     });
+
+    function Validation() {
+        var NodeName = $("#NodeName").val();
+        var ParentNodeId = $("#DDLParentNode").val();
+        var startdate = $("#startdate").val();
+        if (NodeName == '' || NodeName == undefined) {
+            displayMessage('name is required',3);
+            return false;
+        }
+        else if (ParentNodeId == '' || ParentNodeId == undefined) {
+            displayMessage('parent node is required',3);
+            return false;
+        }
+        else if (startdate == '' || startdate == undefined) {
+            displayMessage('start date is required',3);
+            return false;
+        }
+    }
 </script>
