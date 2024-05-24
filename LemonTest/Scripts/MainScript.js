@@ -41,3 +41,22 @@ function deleteNode(NodeId) {
     $("#hdnNodeId").val(NodeId);
     $("#deleteNode").modal('show');
 }
+
+function Validation() {
+    var NodeName = $("#NodeName").val();
+    var ParentNodeId = $("#ParentNodeId").val();
+    var startdate = $("#startdate").val();
+    if (NodeName == '' || NodeName == undefined) {
+        alert('name is node name');
+        return false;
+    }
+    else if (ParentNodeId == '' || ParentNodeId == undefined) {
+        alert('parent node is required');
+        return false;
+    }
+    else if (startdate == '' || startdate == undefined) {
+        alert('start date is required');
+        return false;
+    }
+}
+

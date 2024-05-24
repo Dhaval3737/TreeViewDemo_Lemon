@@ -20,7 +20,7 @@ namespace LemonTest.Models
 
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
-        public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; } = DateTime.Today;
     }
 
     public class ParentNodeModel
