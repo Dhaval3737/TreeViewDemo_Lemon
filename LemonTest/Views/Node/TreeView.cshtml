@@ -1,0 +1,32 @@
+﻿@model LemonTest.Models.NodeListModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Tree viee";
+}
+
+@{
+    int accordionIndex = 0;
+}
+
+<div class="accordion accordion-flush" id="accordionFlushExample">
+    @foreach (var NodeItemGroup in Model.NodeList.Where(a => a.IsActive).GroupBy(a => a.ParentNodeId))
+    {
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-heading-@accordionIndex">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@accordionIndex" aria-expanded="false" aria-controls="flush-collapse-@accordionIndex">
+                    @NodeItemGroup.First().ParentNodeName
+                </button>
+            </h2>
+            <div id="flush-collapse-@accordionIndex" class="accordion-collapse collapse" aria-labelledby="flush-heading-@accordionIndex" data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    @foreach (var obj in NodeItemGroup)
+                    {
+                        <div>@obj.NodeName</div>
+                    }
+                </div>
+            </div>
+        </div>
+        accordionIndex++;
+    }
+</div>
+

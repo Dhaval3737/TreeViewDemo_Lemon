@@ -1,0 +1,79 @@
+﻿@model LemonTest.Models.Nodemodel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Product";
+}
+<!-- Bootstrap CSS -->
+<style>
+    .error {
+        color: red; /* Set error message color to red */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h2 class="text-center">Add Node</h2>
+            @using (Html.BeginForm("saveNodeDetails", "Node", FormMethod.Post, new { id = "StudentForm" }))
+            {
+                @*@Html.AntiForgeryToken()*@
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(model => model.NodeId)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NodeName)
+                    @Html.EditorFor(model => model.NodeName, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter Node Name" } })
+                </div>
+
+                <div class="form-group">
+                    <label>ParentNode</label>
+                    @Html.DropDownListFor(model => model.ParentNodeId, Model.PrentNodeList, new { @class = "form-control", @id = "DDLParentNode" })
+                </div>
+
+                <div class="form-group">
+                    <lable>Start Date</lable>
+                    @Html.EditorFor(model => model.StartDate, "{MM dd yyyy}", new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                </div>
+
+                <div class="form-group">
+                    <label for="IsActive">Is Active</label>
+                    @Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActiveCheckbox" })
+                    @Html.HiddenFor(model => model.IsActive, new { @id = "IsActiveHidden" })
+                </div>
+
+
+                <button type="submit" onclick="return Validation();" class="btn btn-primary btn-block" style="width:70px;">Save</button>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- jQuery library -->
+<script src="~/Scripts/jquery-3.7.1.min.js"></script>
+
+<!-- jQuery Validation Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var Startdate = '@Model.StartDate.ToString("MM/dd/yyyy")';
+
+        if ($('#IsActiveCheckbox').is(':checked')) {
+            $('#IsActiveHidden').val('true');
+        } else {
+            $('#IsActiveHidden').val('false');
+        }
+
+        // When the checkbox is clicked
+        $('#IsActiveCheckbox').change(function () {
+            if ($(this).is(':checked')) {
+                $('#IsActiveHidden').val('true');
+            } else {
+                $('#IsActiveHidden').val('false');
+            }
+        });
+
+
+
+        const myTimeout = setTimeout($("#StartDate").val(Startdate), 2000);
+
+    });
+</script>

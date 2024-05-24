@@ -1,0 +1,73 @@
+﻿@model LemonTest.Models.NodeListModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Node";
+}
+<div class="text-end">
+    <a href="@Url.Action("Node", "Node")" class="btn btn-secondary" style="margin-bottom:20px;">Add Node</a>
+    <a href="@Url.Action("TreeView", "Node")" class="btn btn-secondary" style="margin-bottom:20px;">Tree view</a>
+</div>
+
+@if (Model.NodeList != null && Model.NodeList.Count > 0)
+{
+    <div class="table-responsive">
+
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            @if (Model.NodeList.Count > 0 && Model.NodeList != null)
+            {
+                <thead>
+                    <tr>
+                        <th>Node Name</th>
+                        <th>ParentNode Name</th>
+                        <th>StartDate</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                foreach (var obj in Model.NodeList)
+                {
+                    <tr>
+                        <td>@obj.NodeName</td>
+                        <td>@obj.ParentNodeName</td>
+                        <td>@obj.StartDate.ToString("MM/dd/yyyy")</td>
+                        <td>
+                            <a href="@Url.Action("Node", "Node", new { NodeId = obj.NodeId })">Edit</a>
+                            <a href="#" onclick="deleteNode('@obj.NodeId');">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        Recored Not Found
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}
+
+
+<div class="modal fade" id="deleteNode" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        @using (Html.BeginForm("deleteNode", "Node", FormMethod.Post, new { id = "NodeForm", enctype = "multipart/form-data" }))
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Node</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="hdnNodeId" name="NodeId" />
+                    Are you sure you went to delete Node Details ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">delete</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
