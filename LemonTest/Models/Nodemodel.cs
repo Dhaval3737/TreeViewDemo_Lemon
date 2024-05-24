@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
@@ -15,7 +16,10 @@ namespace LemonTest.Models
         public string ParentNodeName { get; set; }
         [NotMapped]
         public List<SelectListItem> PrentNodeList { get; set; } = new List<SelectListItem>();
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime StartDate { get; set; }
     }
 
